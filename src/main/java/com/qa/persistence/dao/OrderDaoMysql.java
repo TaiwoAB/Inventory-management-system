@@ -17,6 +17,11 @@ import com.qa.persistence.domain.Customer;
 import com.qa.persistence.domain.Item;
 import com.qa.persistence.domain.Order;
 import com.qa.utils.Config;
+/**
+ * This class implements the queries to read, update, create and delete
+ * @author tolaa
+ *
+ */
 public class OrderDaoMysql implements OrderDao<Order,Item,Customer> {
 	public static final Logger logger = Logger.getLogger(OrderController.class);
 	private Connection connection;
@@ -30,12 +35,17 @@ public class OrderDaoMysql implements OrderDao<Order,Item,Customer> {
 		 return "Connection failed";
 	 }
 	}
+	@SuppressWarnings("finally")
 	@Override
+	/**
+	 * This is the method for querying the database to read orders in the database
+	 */
 	public List<Order> readAll() {
 		ArrayList<Order> orders = new ArrayList<Order>();
+		Statement statement =null;
 		try {
 			checkConnection();
-			Statement statement = connection.createStatement();
+			statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery("SELECT * FROM orders");
 			while (resultSet.next()) {
 				Long id = (long) resultSet.getInt("id");
@@ -47,30 +57,59 @@ public class OrderDaoMysql implements OrderDao<Order,Item,Customer> {
 			
 		} catch (Exception e) {
 			logger.error("error displaying the list of orders");
+		}finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+			}
+			return orders;
 		}
-		return orders;
+		
 	}
-
+/**
+ * This is the method to query the database to create an order
+ */
+	@SuppressWarnings("finally")
 	public Order create(Order order) {
+		Statement statement =null;
 		try {
 			checkConnection();
-			Statement statement = connection.createStatement();
+		    statement = connection.createStatement();
 			statement.executeUpdate("INSERT INTO orders(custid,price) values('" + order.getCustId() + "','" + order.getPrice()+ "')" );
 			logger.info("Order created");
 		} catch (Exception e) {
 			logger.error(e);
 		}
-		return null ;
+		finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+			}
+			return order;
+		}
 		
 	}
+	
+	
+	 /**
+	  *  This is the method to query the database to update an order
+	  */
+	
+	@SuppressWarnings("finally")
 	@Override
 	public Order update(long id, Order t) {
 		Long orderId = (Long)id;
-		
+		PreparedStatement stmt=null;
 		String sql = "UPDATE orders SET price= ? WHERE id=" + orderId + " and custid ="+ t.getCustId();
 		try {
 			checkConnection();
-			PreparedStatement stmt = connection.prepareStatement(sql);
+			 stmt = connection.prepareStatement(sql);
 			stmt.setDouble(1, t.getPrice());
 			
 			stmt.execute();
@@ -83,16 +122,28 @@ public class OrderDaoMysql implements OrderDao<Order,Item,Customer> {
 	}catch(Exception e) {
 		 logger.error(e);
 		 
-	 }
-		return null;
+	 }finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+			}
+			return t;
+		}
 		
 	}
+	/**
+	 * This method is used to delete an order
+	 */
 	@Override
 	public void delete(Order order) {
+		PreparedStatement stmt =null;
 		String sql = "DELETE FROM orders WHERE id= ?";
 		try {
 			checkConnection();
-			PreparedStatement stmt = connection.prepareStatement(sql);
+		    stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, order.getId());
 			stmt.execute();
 			System.out.println("Delete complete ");
@@ -100,16 +151,29 @@ public class OrderDaoMysql implements OrderDao<Order,Item,Customer> {
 	}catch(Exception e) {
 		 logger.error("Delete failed");
 		 
-	 }
-	}
+	 }finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+			}
 		
+		}
+	}
+	/**
+	 * This method is used to display items
+	 */		
 	
+@SuppressWarnings("finally")
 @Override 
   public List<Item> itemsDisplay () {
+	Statement statement=null;
 	  ArrayList<Item> items = new ArrayList<Item>();
 		try {
 			checkConnection();
-			Statement statement = connection.createStatement();
+			 statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery("SELECT * FROM items");
 			while (resultSet.next()) {
 				Long id = (long) resultSet.getInt("id");
@@ -121,17 +185,30 @@ public class OrderDaoMysql implements OrderDao<Order,Item,Customer> {
 			}
 		} catch (Exception e) {
 			logger.error(e);
-		}
+		}finally {
+			try {
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+			}
 		return items;
+		}
 	  
   }
+/**
+ * This method is used to get the item price
+ */
+@SuppressWarnings("finally")
 @Override
   public Double itemsPrice(Item c) {
+	PreparedStatement stmt =null;
 	  String sql = "SELECT price FROM items WHERE itemname =?";
 	  Double price = (double)0;
 	  try {
 			checkConnection();
-			PreparedStatement stmt = connection.prepareStatement(sql);
+		 stmt = connection.prepareStatement(sql);
 			stmt.setString(1, c.getName());
 			ResultSet rs = stmt.executeQuery();
 			while(rs.next()) {
@@ -146,17 +223,30 @@ public class OrderDaoMysql implements OrderDao<Order,Item,Customer> {
 		 logger.error(e);
 		 price= (double) 0;
 		 
-	 }
-	 return price;
+	 }finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+			}
+		return price;
+		}
   }
-
+/**
+ * This method is used to get customerId
+ */
+@SuppressWarnings("finally")
 @Override
 public Long getCustomerId(Customer v) {
+	PreparedStatement stmt= null;
 	String sql = "SELECT id FROM customers WHERE firstname= ? AND surname= ? AND email= ?";
 	Long id =(long) 0;
 	try {
+		stmt = null;
 		checkConnection();
-		PreparedStatement stmt = connection.prepareStatement(sql);
+	     stmt = connection.prepareStatement(sql);
 		stmt.setString(1, v.getFirstName());
 		stmt.setString(2, v.getSurname());
 		stmt.setString(3, v.getEmail());
@@ -176,17 +266,31 @@ public Long getCustomerId(Customer v) {
 	 logger.error(e);
 	 id= (long) 0;
 	 
- }
-	logger.info("The customerid is "+id);
-	return id;
+ }finally {
+		try {
+			if (stmt != null) {
+				stmt.close();
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		logger.info("The customerid is "+id);
+		return id;
+	}
+	
 }
+/**
+ * This method is used to get orderID an order
+ */
+@SuppressWarnings("finally")
 @Override
 public Long getOrderId(Long custId, Double price) {
+	PreparedStatement stmt=null;
 	String sql = "SELECT id from orders WHERE custid= ? && price= ? ";
 	Long id =(long) 0;
 	try {
 		checkConnection();
-		PreparedStatement stmt = connection.prepareStatement(sql);
+	    stmt = connection.prepareStatement(sql);
 		stmt.setLong(1, custId);
 		stmt.setDouble(2,price);
 		
@@ -207,18 +311,32 @@ public Long getOrderId(Long custId, Double price) {
 	 logger.error(e);
 	 id= (long) 0;
 	 
- }
-	logger.info("The orderid is "+id);
-	return id;
+ }finally {
+		try {
+			if (stmt != null) {
+				stmt.close();
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		logger.info("The orderid is "+id);
+		return id;
+	}
+	
 	
 }
+/**
+ * method to get itemId
+ */
+@SuppressWarnings("finally")
 @Override
 public Long getItemId(Item u) {
+	PreparedStatement stmt=null;
 	String sql = "SELECT id from items WHERE itemname= ?";
 	long id =(long) 0;
 	try {
 		checkConnection();
-		PreparedStatement stmt = connection.prepareStatement(sql);
+		stmt = connection.prepareStatement(sql);
 		stmt.setString(1, u.getName());
 	
 		ResultSet rs = stmt.executeQuery();
@@ -238,17 +356,31 @@ public Long getItemId(Item u) {
 	 logger.error(e);
 	 id= (long) 0;
 	 
- }
-	logger.info("The itemid is "+id);
-	return id;
+ }finally {
+		try {
+			if (stmt != null) {
+				stmt.close();
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		logger.info("The itemid is "+id);
+		return id;
+	}
+	
 }
+/**
+ * method to get List<Order>
+ */
+@SuppressWarnings("finally")
 @Override
 public List<Order> orderDetailsDisplay(Long id) {
+	PreparedStatement stmt=null;
 	 ArrayList<Order> orders = new ArrayList<Order>();
 		try {
 			checkConnection();
 			String sql= "SELECT * FROM orders WHERE custid =? ";
-			PreparedStatement stmt = connection.prepareStatement(sql);
+			stmt = connection.prepareStatement(sql);
 			stmt.setLong(1, id);
 			ResultSet resultSet = stmt.executeQuery();
 			
@@ -261,16 +393,31 @@ public List<Order> orderDetailsDisplay(Long id) {
 			}
 		} catch (Exception e) {
 			logger.error(e);
+		}finally {
+			try {
+				if (stmt != null) {
+					stmt.close();
+				}
+			} catch (Exception e) {
+				logger.error(e);
+			}
+			logger.info("The itemid is "+id);
+			return orders;
 		}
-		return orders;
+		
 }
+/**
+ * getting 
+ */
+@SuppressWarnings("finally")
 @Override
 public Double getTotalPriceById(Long orderId) {
+	PreparedStatement stmt =null;
 	String sql = "SELECT price FROM orders WHERE id= ?";
 	Double price =0.00;
 	try {
 		checkConnection();
-		PreparedStatement stmt = connection.prepareStatement(sql);
+		stmt = connection.prepareStatement(sql);
 		stmt.setLong(1, orderId);
 	
 		ResultSet rs = stmt.executeQuery();
@@ -290,9 +437,18 @@ public Double getTotalPriceById(Long orderId) {
 	 logger.error(e);
 	 price= 0.00;
 	 
- }
-	logger.info("The price of the order is "+price);
-	return price;
+ }finally {
+		try {
+			if (stmt != null) {
+				stmt.close();
+			}
+		} catch (Exception e) {
+			logger.error(e);
+		}
+		logger.info("The price of the order is "+price);
+		return price;
+	}
+	
 }
 	
 	

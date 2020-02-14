@@ -17,8 +17,16 @@ import com.qa.services.GetItemId;
 import com.qa.services.GetOrderDetails;
 import com.qa.services.OrderLineServices;
 import com.qa.utils.Utils;
-
+/**
+ * class 
+ * @author tolaa
+ *
+ */
 public class OrderController implements CrudController<Order>,GetItemListController<Item>,GetCustomerIdController<Customer>, GetItemIdController<Item>, GetOrderIdController<Order>, GetOrderItemDetailsController{
+	
+	/**
+	 * Initialising variables
+	 */
 	public static final Logger LOGGER = Logger.getLogger(OrderController.class);
 	private String itemName;
 	private CrudServices<Order> orderService;
@@ -29,7 +37,9 @@ public class OrderController implements CrudController<Order>,GetItemListControl
 	
 	
 	
-	
+	/**
+	 * cRAETING A CONSTRUCTOR FOR THE ORDER CONTROLLER
+	 */
 	public OrderController(CrudServices<Order> orderService, GetCustomerId<Customer> getCustomerId, GetOrderDetails<Order, Item,Customer> getOrderDetails, GetItemId<Item> getItemId,OrderLineServices orderLineService) {
 		this.orderService= orderService;
 		this.getCustomerId = getCustomerId;
@@ -37,7 +47,9 @@ public class OrderController implements CrudController<Order>,GetItemListControl
 		this.getOrderDetails = getOrderDetails;
 		this.orderLineService= orderLineService;
 	}
-	
+	/**
+	 * method to read and return a list of orders
+	 */
 	public List<Order> readAll() {
 		List<Order> orders = new ArrayList<Order>(); 
 		for(Order order: orderService.readAll()) {
@@ -47,60 +59,68 @@ public class OrderController implements CrudController<Order>,GetItemListControl
 		return orders;
 	}
 	
-
+	/**
+	 * method to create and  list of orders
+	 */
 
 	public Order create() {
+		Order orders =null;
 		ArrayList<Long> idList = new ArrayList<Long>();
 		ArrayList<Integer> quantityList = new ArrayList<Integer>();
      	Double totalPrice = 0.00;
 		Long custId= getCustomerId();
-		itemsDisplay();
-		while(true) {
-			
-			LOGGER.info("Please enter the name of the item to purchase. Enter stop to end.");
-			 this.itemName = Utils.getInput();
-			if(this.itemName.equalsIgnoreCase("stop")){
-				break;
-			}
-			Long id= getItemId();
-			idList.add(id);
-			
-			Double price =getOrderDetails.itemsPrice(new Item(itemName));
-			LOGGER.info("Please enter the quantity");
-			String quantity = Utils.getInput();
-			int quantityinteger = Integer.parseInt(quantity);
-			quantityList.add( quantityinteger);
-			Double totalPriceForEachItem = quantityinteger * price;
-			totalPrice = totalPrice + totalPriceForEachItem;
-			
-			
-		}
-		
-		Order order =orderService.create(new Order(totalPrice,custId));
-		
-		try {
-			TimeUnit.SECONDS.sleep(10);
-		} catch (InterruptedException e) {
-		
-			e.printStackTrace();
-		}
-		DecimalFormat df = new DecimalFormat("0.00");      
-		Double total = Double.parseDouble(df.format(totalPrice));
-		Long result= getOrderId(custId,total);
-		
-		if(result!=0) {
-			for(int i=0; i<quantityList.size();i++) {
-				System.out.println("list of id"+idList.get(i));
-				System.out.println("list of quantity"+quantityList.get(i));
-			
-				orderLineCreate(result,idList.get(i),quantityList.get(i));
+		if(custId!=0) {
+			itemsDisplay();
+			while(true) {
+				
+				LOGGER.info("Please enter the name of the item to purchase. Enter stop to end.");
+				 this.itemName = Utils.getInput();
+				if(this.itemName.equalsIgnoreCase("stop")){
+					break;
+				}
+				Long id= getItemId();
+				idList.add(id);
+				
+				Double price =getOrderDetails.itemsPrice(new Item(itemName));
+				LOGGER.info("Please enter the quantity");
+				String quantity = Utils.getInput();
+				int quantityinteger = Integer.parseInt(quantity);
+				quantityList.add( quantityinteger);
+				Double totalPriceForEachItem = quantityinteger * price;
+				totalPrice = totalPrice + totalPriceForEachItem;
+				
+				
 			}
 			
+			 orders =orderService.create(new Order(totalPrice,custId));
+			
+			try {
+				TimeUnit.SECONDS.sleep(10);
+			} catch (InterruptedException e) {
+			
+				e.printStackTrace();
+			}
+			DecimalFormat df = new DecimalFormat("0.00");      
+			Double total = Double.parseDouble(df.format(totalPrice));
+			Long result= getOrderId(custId,total);
+			
+			if(result!=0) {
+				for(int i=0; i<quantityList.size();i++) {
+					System.out.println("list of id"+idList.get(i));
+					System.out.println("list of quantity"+quantityList.get(i));
+				
+					orderLineCreate(result,idList.get(i),quantityList.get(i));
+				}
+				
+			}
+			
 		}
-		return order;
 		
+		return orders;
 	}
-
+/**
+ * This method returns updated orders
+ */
 	public  Order update() {
 		Order orders = null;
 		String name= "";
@@ -142,7 +162,7 @@ public class OrderController implements CrudController<Order>,GetItemListControl
 					}else if((quantity*pricePerItem)==totalPrice) {
 						totalPrice=totalPrice+0;
 					}else {
-						totalPrice=totalPrice+(quantity*pricePerItem);
+						totalPrice=totalPrice+((quantity*pricePerItem)-totalPrice);
 					}
 					orderLineUpdate(orderlineid ,quantity);
 					 orders= orderService.update(ordId,new Order(ordId,custId,totalPrice));
@@ -159,11 +179,13 @@ public class OrderController implements CrudController<Order>,GetItemListControl
 		
 		
 	}
-
+/**
+ * This method is to delete an order
+ */
 	public void delete() {
 		Long custId= getCustomerId();
 		
-		for(Order order:orderDetailsDisplay(custId)) { ///This uses the orderdetailsdisplay fucntion to return the list of orders and print each one
+		for(Order order:orderDetailsDisplay(custId)) { 
 			LOGGER.info(order.toString());
 		}
 		while(true) {

@@ -1,7 +1,14 @@
 package com.qa.persistence.dao;
 
 import java.util.List;
-
+/***
+ * This ia an interface for methods to implement crud services and also obtain characteristics for the order
+ * @author tolaa
+ *
+ * @param <T>
+ * @param <U>
+ * @param <V>
+ */
 
 public interface OrderDao<T, U, V>{
     List<T> readAll();

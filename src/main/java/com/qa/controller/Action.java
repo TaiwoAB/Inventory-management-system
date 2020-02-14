@@ -4,6 +4,12 @@ import org.apache.log4j.Logger;
 
 import com.qa.utils.Utils;
 
+/**
+ * 
+ * @author tolaa
+ *Craeting enums for the CRUD functionality
+ */
+
 public enum Action {
 
 	CREATE("To save a new item into the database"), READ("To read an item from the database"),

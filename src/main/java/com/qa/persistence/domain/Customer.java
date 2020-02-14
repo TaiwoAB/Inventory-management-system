@@ -1,5 +1,9 @@
 package com.qa.persistence.domain;
-
+/**
+ * CReating a customer class
+ * @author tolaa
+ *
+ */
 public class Customer{
 
 	private Long id;
@@ -13,52 +17,88 @@ public class Customer{
 
 		
 	}
-	
+	/**
+	 * Creating a 
+	 * @param firstName
+	 * @param surname
+	 * @param email
+	 */
 	public Customer(String firstName, String surname, String email) {
 		this.firstName = firstName;
 		this.surname = surname;
 		this.email=email;
 		
 	}
-
+/**
+ * 
+ * @param id
+ * @param firstName
+ * @param surname
+ * @param email
+ */
 	public Customer(Long id, String firstName, String surname, String email) {
 		this.id = id;
 		this.firstName = firstName;
 		this.surname = surname;
 		this.email=email;
 	}
-	
+	/**
+	 * 
+	 * @param id
+	 * @param firstName
+	 * @param surname
+	 */
 	public Customer(Long id, String firstName, String surname) {
 		// TODO Auto-generated constructor stub
 		this.id = id;
 		this.firstName = firstName;
 		this.surname = surname;
 	}
-
+/**
+ * method to
+ * @return id 
+ */
 	public Long getId() {
 		return id;
 	}
-
+/**
+ * method to set
+ * @param id
+ */
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+/**
+ * Method to 
+ * @return first name
+ */
 	public String getFirstName() {
 		return firstName;
 	}
-
+/**
+ * method to set
+ * @param firstName
+ */
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-
+/**
+ * method to 
+ * @return surname
+ */
 	public String getSurname() {
 		return surname;
 	}
-
+/**
+ * Method to set
+ * @param surname
+ */
 	public void setSurname(String surname) {
 		this.surname = surname;
 	}
-	
+	/**
+	 * setting the to string method
+	 */
 	public String toString() {
 		return "\n"+ "Id: " + id + "\n"+ "First name: " + firstName +"\n"+ "Surname: " + surname+"\n"+ "Email: "+email + "\n" + "...................................................." ;
 	}

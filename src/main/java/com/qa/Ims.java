@@ -1,6 +1,10 @@
 package com.qa;
 
+/**
+ * Importing the files needed for the this class
+ */
 import org.apache.log4j.Logger;
+
 
 import com.qa.controller.Action;
 import com.qa.controller.CrudController;
@@ -22,11 +26,18 @@ import com.qa.services.OrderLineServices;
 import com.qa.services.OrderServices;
 import com.qa.utils.Config;
 import com.qa.utils.Utils;
+/**
+ * 
+ * @author tolaa
+ *creating the class IMS
+ */
 
 public class Ims {
 	
 	public static final Logger LOGGER = Logger.getLogger(Ims.class);
-
+	/**
+	 * Creating a method that returns void;
+	 */
 	public void imsSystem() {
 		LOGGER.info("What is your username");
 		Config.username = Utils.getInput();
@@ -41,6 +52,9 @@ public class Ims {
 
 		Action.printActions();
 		Action action = Action.getAction();
+		/**
+		 * Using a switch case statement
+		 */
 		
 		switch (domain) {
 		case CUSTOMER:
@@ -60,7 +74,12 @@ public class Ims {
 		}
 		
 	}
-	
+	/**
+	 * 
+	 * @param crudController
+	 * @param action
+	 * This is used to switch action whether it is create, read, update or delete
+	 */
 	public void doAction(CrudController<?> crudController, Action action) {
 		switch (action) {
 		case CREATE:

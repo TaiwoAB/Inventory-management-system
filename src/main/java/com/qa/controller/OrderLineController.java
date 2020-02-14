@@ -5,7 +5,11 @@ import com.qa.persistence.domain.OrderLine;
 
 import com.qa.services.GetOrderItemDetails;
 
-
+/**
+ * Orderline controller class which implements an interface to get orderitem details, it has a crud functionality in this class
+ * @author tolaa
+ *
+ */
 	
 	public class OrderLineController implements GetOrderItemDetailsController {
 		

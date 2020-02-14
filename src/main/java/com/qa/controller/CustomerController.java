@@ -10,6 +10,11 @@ import com.qa.services.CrudServices;
 import com.qa.services.GetCustomerId;
 import com.qa.utils.Utils;
 
+/**
+ * Creating the customer controller implementing the crud controller and Get customerId controller 
+ * @author tolaa
+ *
+ */
 public class CustomerController implements CrudController<Customer>, GetCustomerIdController<Customer>{
 
 	public static final Logger LOGGER = Logger.getLogger(CustomerController.class);
@@ -22,6 +27,9 @@ public class CustomerController implements CrudController<Customer>, GetCustomer
 		this.getCustomerId = getCustomerId;
 		
 	}
+	/***
+	 * Creating a method for invoke the read method of the customer service
+	 */
 	
 	public List<Customer> readAll() {
 		List<Customer> customers = new ArrayList<Customer>();
@@ -32,7 +40,9 @@ public class CustomerController implements CrudController<Customer>, GetCustomer
 		return customers;
 	}
 
-
+	/***
+	 * Creating a method for invoke the create method of the customer service
+	 */
 	public Customer create() {
 		LOGGER.info("Please enter a first name");
 		String firstName = Utils.getInput();
@@ -57,7 +67,9 @@ public class CustomerController implements CrudController<Customer>, GetCustomer
 		
 	}
 
-
+/**
+ * This is the controller used to invoke the customer service's update method
+ */
 	public Customer update() {
 		Customer customer=null;
 		LOGGER.info("Hi,  it seems you want to change some details, please follow the steps below");
@@ -88,6 +100,9 @@ public class CustomerController implements CrudController<Customer>, GetCustomer
 		 return customer;
 	
 	}
+	/**
+	 * Method to delete the customer in the database
+	 */
 
 	public void delete() {
 		LOGGER.info("Please enter a first name");
@@ -110,7 +125,9 @@ public class CustomerController implements CrudController<Customer>, GetCustomer
 		}
 		customerService.delete(new Customer(firstName, surname, email));
 	}
-
+ /**
+  * Method to return the customer ID
+  */
 	
 	public Long getCustomerId() {
 		
